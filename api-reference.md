@@ -359,42 +359,16 @@ Transfer funds to a bank account.
 
 **Authentication:** Required (Bearer token)
 
-**Request Body:**
-
-```json
-{
-  "bank_code": "001",
-  "account_number": "1234567890",
-  "amount": 5000.0,
-  "account_name": "John Doe",
-  "reference": "REF-12345"
-}
-```
+**Request Format:** Form data (application/x-www-form-urlencoded)
 
 **Request Parameters:**
 
-| Field            | Type   | Required | Description                           |
-| ---------------- | ------ | -------- | ------------------------------------- |
-| `bank_code`      | string | Yes      | Kenya bank code (e.g., "001" for KCB) |
-| `account_number` | string | Yes      | Recipient account number              |
-| `amount`         | float  | Yes      | Amount to send (KES)                  |
-| `account_name`   | string | Yes      | Recipient name                        |
-| `reference`      | string | No       | Your reference                        |
-
-**Common Bank Codes:**
-
-```
-001 = KCB Group Limited
-002 = Barclays Bank
-006 = Co-operative Bank
-007 = Standard Chartered
-008 = Citibank Kenya
-011 = Diamond Trust Bank
-014 = National Bank of Kenya
-015 = Equity Bank
-031 = Housing Finance
-032 = Consolidated Bank Kenya
-```
+| Field          | Type   | Required | Description                                   |
+| -------------- | ------ | -------- | --------------------------------------------- |
+| `swift_code`   | string | Yes      | Bank SWIFT code (e.g., "EQBLKENA" for Equity) |
+| `bank_account` | string | Yes      | Recipient bank account number                 |
+| `amount`       | float  | Yes      | Amount to send (KES)                          |
+| `note`         | string | No       | Transaction description                       |
 
 **Response (200 OK):**
 
@@ -402,8 +376,8 @@ Transfer funds to a bank account.
 {
   "message": "Funds sent successfully",
   "transaction_id": "TXN-1770727500-88888",
-  "bank": "KCB Group Limited",
-  "account_number": "1234567890",
+  "bank": "Equity Bank",
+  "bank_account": "1234567890",
   "amount": 5000.0,
   "status": "pending",
   "timestamp": 1770727500,
@@ -413,23 +387,63 @@ Transfer funds to a bank account.
 
 **Error Responses:**
 
-- `400 Bad Request` - Invalid bank details
+- `400 Bad Request` - Invalid bank details or missing required parameters
+
+```json
+{
+  "error": "Amount, bank account, and bank swift code are required"
+}
+```
+
 - `401 Unauthorized` - Invalid token
+
+```json
+{
+  "error": "Invalid or expired access token",
+  "message": "Please re-authorize to get a new token"
+}
+```
+
 - `402 Payment Required` - Insufficient balance
+
+```json
+{
+  "error": "Insufficient balance",
+  "message": "Your account balance is too low"
+}
+```
+
 - `500 Internal Server Error` - Bank transfer failed
+
+```json
+{
+  "error": "Transfer failed",
+  "message": "Please try again later"
+}
+```
+
+**Common Kenya Bank SWIFT Codes:**
+
+```
+KCBLKENA   = KCB Group Limited
+BARCKENA   = Barclays Bank Kenya
+COBAKENAN  = Co-operative Bank Kenya
+SCBLKENA   = Standard Chartered Kenya
+CITIKENA   = Citibank Kenya
+DTBLKENA   = Diamond Trust Bank Kenya
+NBKEKENA   = National Bank of Kenya
+EQBLKENA   = Equity Bank Kenya
+HOUBEKEA   = Housing Finance Bank
+CBKEKENA   = Consolidated Bank Kenya
+```
 
 **Usage:**
 
 ```bash
 curl -X POST \
   -H "Authorization: Bearer <token>" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "bank_code": "015",
-    "account_number": "0123456789",
-    "amount": 5000,
-    "account_name": "John Doe"
-  }' \
+  -H "Content-Type: application/x-www-form-urlencoded" \
+  -d "swift_code=EQBLKENA&bank_account=0123456789&amount=5000&note=Payment+for+services" \
   https://pay.sellapay.africa/api/v1/sendFundsToLocalBank
 ```
 

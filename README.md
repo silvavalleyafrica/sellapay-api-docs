@@ -279,14 +279,8 @@ curl -X POST \
 ```bash
 curl -X POST \
   -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "bank_code": "015",
-    "account_number": "0123456789",
-    "amount": 5000,
-    "account_name": "John Doe",
-    "reference": "REF-12345"
-  }' \
+  -H "Content-Type: application/x-www-form-urlencoded" \
+  -d "swift_code=EQBLKENA&bank_account=0123456789&amount=5000&note=Payment+for+services" \
   "https://pay.sellapay.africa/api/v1/sendFundsToLocalBank"
 ```
 
@@ -297,7 +291,7 @@ curl -X POST \
   "message": "Funds sent successfully",
   "transaction_id": "TXN-1770727500-88888",
   "bank": "Equity Bank",
-  "account_number": "0123456789",
+  "bank_account": "0123456789",
   "amount": 5000.0,
   "status": "pending",
   "timestamp": 1770727500,
@@ -307,25 +301,24 @@ curl -X POST \
 
 **Request Parameters:**
 
-- `bank_code` (required): Kenya bank code (e.g., "015" for Equity Bank)
-- `account_number` (required): Recipient account number
+- `swift_code` (required): Bank SWIFT code (e.g., "EQBLKENA" for Equity Bank Kenya)
+- `bank_account` (required): Recipient bank account number
 - `amount` (required): Amount in KES
-- `account_name` (required): Recipient name
-- `reference` (optional): Your reference
+- `note` (optional): Transaction description
 
-**Common Bank Codes:**
+**Common Kenya Bank SWIFT Codes:**
 
 ```
-001 = KCB Group Limited
-002 = Barclays Bank
-006 = Co-operative Bank
-007 = Standard Chartered
-008 = Citibank Kenya
-011 = Diamond Trust Bank
-014 = National Bank of Kenya
-015 = Equity Bank
-031 = Housing Finance
-032 = Consolidated Bank Kenya
+KCBLKENA   = KCB Group Limited
+BARCKENA   = Barclays Bank Kenya
+COBAKENAN  = Co-operative Bank Kenya
+SCBLKENA   = Standard Chartered Kenya
+CITIKENA   = Citibank Kenya
+DTBLKENA   = Diamond Trust Bank Kenya
+NBKEKENA   = National Bank of Kenya
+EQBLKENA   = Equity Bank Kenya
+HOUBEKEA   = Housing Finance Bank
+CBKEKENA   = Consolidated Bank Kenya
 ```
 
 ---
