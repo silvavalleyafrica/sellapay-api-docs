@@ -1,4 +1,3 @@
-`````markdown
 # Contributing to Sellapay API Documentation
 
 Thank you for your interest in contributing! This guide explains how to contribute to the Sellapay API documentation and examples.
@@ -598,8 +597,3 @@ Contributors are recognized in:
 - Release notes (for significant contributions)
 
 Thank you for contributing! 🎉
-
-```
-
-```
-`````

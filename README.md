@@ -1,4 +1,3 @@
-````markdown
 # Sellapay API Documentation
 
 **Current API Version:** `v1` (Stable)
@@ -180,8 +179,3 @@ For integration assistance, technical issues, or questions:
 
 **Last Updated:** February 10, 2026  
 **Documentation Version:** 1.0.0
-
-```
-
-```
-````

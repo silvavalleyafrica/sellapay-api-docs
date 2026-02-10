@@ -1,4 +1,3 @@
-````markdown
 # Changelog
 
 All notable changes to the Sellapay API are documented in this file.
@@ -262,8 +261,3 @@ Migration guide: [Authentication Setup](./setup/authentication-setup.md)
 - [Authentication Setup](./setup/authentication-setup.md)
 - [Environment Variables](./setup/environment-variables.md)
 - [GitHub Repository](#)
-
-```
-
-```
-````

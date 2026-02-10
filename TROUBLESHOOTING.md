@@ -1,4 +1,3 @@
-````markdown
 # Troubleshooting Guide
 
 ## Quick Diagnosis
@@ -239,6 +238,57 @@ else:
     # ERROR: Invalid prefix
 ```
 
+### "Invalid amount"
+
+**Symptoms:**
+
+- `POST /requestStkPush` returns `400 Bad Request`
+- Error mentions "Invalid amount"
+
+**Causes:**
+
+- Amount is 0 or negative
+- Amount too large (> 70,000)
+- Amount format invalid (text instead of number)
+- Amount has too many decimals
+
+**Solutions:**
+
+```python
+# Validate amount
+amount = 100.00
+if amount <= 0:
+    raise ValueError("Amount must be positive")
+if amount > 70000:
+    raise ValueError("Amount exceeds maximum")
+if amount != round(amount, 2):
+    raise ValueError("Amount must have max 2 decimals")
+```
+
+### "Invalid reference"
+
+**Symptoms:**
+
+- `POST /requestStkPush` returns `400 Bad Request`
+- Error mentions "Invalid reference"
+
+**Causes:**
+
+- Reference > 20 characters
+- Reference contains special characters
+- Reference is not unique (duplicate)
+
+**Solutions:**
+
+```python
+# Validate reference
+reference = "INV-001"
+if len(reference) > 20:
+    raise ValueError("Reference must be ≤ 20 chars")
+if not reference.replace("-", "").replace("_", "").isalnum():
+    raise ValueError("Reference must be alphanumeric")
+```
+
 ---
 
 ## Network Errors
@@ -302,6 +352,211 @@ traceroute pay.sellapay.africa
 ✗ https://access.sellapay.africa/api/ (wrong domain)
 ```
 
+### "SSL certificate error"
+
+**Symptoms:**
+
+- SSL_CERTIFICATE_VERIFY_FAILED
+- CERTIFICATE_VERIFY_FAILED
+- Certificate pinning failed
+
+**Causes:**
+
+- System clock is wrong
+- Certificate chain incomplete
+- Expired system certificates
+- Antivirus intercepting SSL
+
+**Solutions:**
+
+1. **Update system calendar:**
+
+```bash
+# Windows
+w32tm /resync
+
+# Mac
+date
+timedatectl set-ntp true
+```
+
+2. **Install certificate:**
+
+```bash
+# Windows: Add certificate to trusted store
+# Mac: Update certificates via Security.framework
+# Linux: Update ca-certificates package
+```
+
+3. **For development only - disable verification (NOT production):**
+
+```python
+# Python
+import ssl
+ssl._create_default_https_context = ssl._create_unverified_context
+
+# Node.js
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0'  # DEV ONLY!
+
+# PHP (cURL)
+curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);  // DEV ONLY!
+```
+
+---
+
+## Rate Limiting
+
+### "Too many requests" / 429 Error
+
+**Symptoms:**
+
+- `429 Too Many Requests` response
+- X-RateLimit-Reset header present
+- Requests suddenly rejected
+
+**Causes:**
+
+- Hit rate limit (10/min for /authorize, 100/min for others)
+- Multiple requests in quick succession
+- Polling endpoint too frequently
+
+**Solutions:**
+
+1. **Check rate limits:**
+
+```bash
+# Look for these headers
+X-RateLimit-Limit: 100
+X-RateLimit-Remaining: 45
+X-RateLimit-Reset: 1770727500
+```
+
+2. **Implement backoff:**
+
+```python
+import time
+import math
+
+def retry_with_backoff(func, max_attempts=3):
+    for attempt in range(max_attempts):
+        try:
+            return func()
+        except RateLimitError:
+            if attempt < max_attempts - 1:
+                delay = 2 ** attempt  # exponential backoff
+                time.sleep(delay)
+            else:
+                raise
+```
+
+3. **Cache tokens:**
+
+```python
+# Don't call authorize on every request
+# Reuse token until it expires
+# Implement token caching with TTL
+```
+
+4. **Batch requests:**
+
+```python
+# Instead of many small requests
+# Batch multiple transactions
+# Use /sendFundsToSellapay for bulk transfers
+```
+
+---
+
+## Server Errors (500+)
+
+### "Internal Server Error" (500)
+
+**Symptoms:**
+
+- `500 Internal Server Error`
+- Same request works sometimes, fails others
+- Error in response body is minimal
+
+**Causes:**
+
+- Temporary server issue
+- Database connection problem
+- Third-party service down (M-Pesa, bank API)
+- Request triggered unexpected condition
+
+**Solutions:**
+
+1. **Retry with exponential backoff:**
+
+```python
+import time
+
+for attempt in range(3):
+    try:
+        response = make_request()
+        break
+    except ServerError as e:
+        if attempt < 2:
+            time.sleep(2 ** attempt)
+        else:
+            raise e
+```
+
+2. **Check server status:**
+
+```bash
+curl https://status.sellapay.africa/
+```
+
+3. **Contact support:**
+   - Provide request ID (X-Request-ID header)
+   - Include timestamp
+   - Describe what you were trying to do
+
+### "Service Unavailable" (503)
+
+**Symptoms:**
+
+- `503 Service Unavailable`
+- All requests fail
+- API completely down
+
+**Causes:**
+
+- Scheduled maintenance
+- Server overload
+- Database maintenance
+- Third-party dependency down
+
+**Solutions:**
+
+1. **Wait and retry:**
+
+```python
+import time
+
+while True:
+    try:
+        response = make_request()
+        break
+    except ServiceUnavailableError:
+        print("Service unavailable, retrying in 30 seconds...")
+        time.sleep(30)
+```
+
+2. **Check status page:**
+   - https://status.sellapay.africa/
+   - Email notifications available
+   - Follow @sellapay_status on Twitter
+
+3. **Set up monitoring:**
+
+```bash
+# Periodically check status
+* * * * * curl -f https://pay.sellapay.africa/api/v1/authorize \
+  -H "X-API-KEY: $KEY" || send_alert
+```
+
 ---
 
 ## Debugging Best Practices
@@ -342,6 +597,46 @@ error_log('Event happened');
 // Don't log: error_log("Token: $token");
 ```
 
+### 2. Use Request ID
+
+```bash
+# Every response includes X-Request-ID header
+# Use this when contacting support
+curl -v https://pay.sellapay.africa/api/v1/authorize \
+  -H "X-API-KEY: test" \
+  -H "X-API-SECRET: test" | grep "X-Request-ID"
+```
+
+### 3. Test Endpoints in Isolation
+
+```bash
+# Test authorize first
+curl -X POST \
+  -H "X-API-KEY: key" \
+  -H "X-API-SECRET: secret" \
+  https://pay.sellapay.africa/api/v1/authorize
+
+# Once authorize works, test other endpoints
+curl -H "Authorization: Bearer <token>" \
+  https://pay.sellapay.africa/api/v1/getBalance
+```
+
+### 4. Check Environment Variables
+
+```bash
+# Don't print actual values, just verify they exist
+[[ -z "$API_KEY" ]] && echo "API_KEY not set"
+[[ -z "$API_SECRET" ]] && echo "API_SECRET not set"
+```
+
+### 5. Use API Debugging Tools
+
+- **Postman** - GUI for testing endpoints
+- **curl** - Command-line HTTP testing
+- **Insomnia** - Alternative to Postman
+- **Swagger UI** - Interactive API docs
+- **request inspector** - Browser network tab
+
 ---
 
 ## Common Issues Checklist
@@ -375,8 +670,3 @@ error_log('Event happened');
 5. Steps to reproduce
 6. Programming language/version
 7. Environment (dev/staging/production)
-
-```
-
-```
-````

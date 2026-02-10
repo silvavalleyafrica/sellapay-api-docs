@@ -1,4 +1,3 @@
-````markdown
 # API Reference
 
 Complete endpoint documentation for Sellapay API v1.
@@ -514,8 +513,3 @@ See [CHANGELOG](../CHANGELOG.md) for updates.
 - **Documentation:** https://docs.pay.sellapay.africa/
 - **Status Page:** https://status.sellapay.africa/
 - **Email:** api-support@sellapay.africa
-
-```
-
-```
-````
