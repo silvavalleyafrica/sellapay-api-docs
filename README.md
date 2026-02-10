@@ -100,54 +100,237 @@ The API uses JWT (JSON Web Token) authentication with HMAC-SHA256 signing:
    - Log errors securely (mask sensitive values)
    - Monitor for anomalous activity
 
-## 📖 Examples
+## 📖 Endpoint Examples
 
-### Authorize and Get Balance (cURL)
+### 1. Authorize — Get Access Token
+
+**Request:**
 
 ```bash
-# 1. Authorize
-TOKEN=$(curl -s -X POST \
+curl -X POST \
   -H "X-API-KEY: YOUR_API_KEY" \
   -H "X-API-SECRET: YOUR_API_SECRET" \
-  "https://pay.sellapay.africa/api/v1/authorize" | jq -r '.access_token')
+  -H "Content-Type: application/json" \
+  -d '{}' \
+  "https://pay.sellapay.africa/api/v1/authorize"
+```
 
-# 2. Get balance using token
-curl -H "Authorization: Bearer $TOKEN" \
+**Response:**
+
+```json
+{
+  "message": "User authorized",
+  "account": "fbsotk4jH1L7FiO2z2qkqsPiqVHJSaVmpgBu8a7iMWGaba97RH",
+  "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "expires_in": 3600
+}
+```
+
+---
+
+### 2. Get Balance — Check Account Balance
+
+**Request:**
+
+```bash
+curl -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
   "https://pay.sellapay.africa/api/v1/getBalance"
 ```
 
-### Send M-Pesa STK Push (Python)
+**Response:**
 
-```python
-import requests
-
-api_key = "YOUR_API_KEY"
-api_secret = "YOUR_API_SECRET"
-
-# Authorize
-auth_response = requests.post(
-    "https://pay.sellapay.africa/api/v1/authorize",
-    headers={
-        "X-API-KEY": api_key,
-        "X-API-SECRET": api_secret
-    }
-)
-token = auth_response.json()["access_token"]
-
-# Request STK push
-stk_response = requests.post(
-    "https://pay.sellapay.africa/api/v1/requestStkPush",
-    headers={"Authorization": f"Bearer {token}"},
-    data={
-        "amount": 100,
-        "phone": "712345678",  # Local format, no country code
-        "note": "Payment for invoice #1001"
-    }
-)
-print(stk_response.json())
+```json
+{
+  "message": "Balance retrieved",
+  "balance": {
+    "KES": 50000.0,
+    "USD": 425.53,
+    "EUR": 389.95,
+    "GBP": 338.45
+  },
+  "primary_currency": "KES",
+  "timestamp": 1770727500
+}
 ```
 
-See [examples/](./examples/) directory for more language-specific implementations.
+---
+
+### 3. Request STK Push — Initiate M-Pesa Payment
+
+**Request:**
+
+```bash
+curl -X POST \
+  -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "phone": "712345678",
+    "amount": 100,
+    "reference": "INV-001",
+    "description": "Payment for services"
+  }' \
+  "https://pay.sellapay.africa/api/v1/requestStkPush"
+```
+
+**Response:**
+
+```json
+{
+  "message": "STK push initiated",
+  "transaction_id": "TXN-1770727500-12345",
+  "phone": "254712345678",
+  "amount": 100.0,
+  "status": "pending",
+  "description": "Payment for services"
+}
+```
+
+**Request Parameters:**
+
+- `phone` (required): Customer phone number in local format (7xx or 1xx, no country code)
+- `amount` (required): Amount in KES
+- `reference` (optional): Your transaction reference
+- `description` (optional): Description visible to customer
+
+---
+
+### 4. Send Funds to Mobile — Initiate Mobile Transfer
+
+**Request:**
+
+```bash
+curl -X POST \
+  -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "phone": "712345678",
+    "amount": 100,
+    "reference": "REF-001",
+    "narrative": "Refund"
+  }' \
+  "https://pay.sellapay.africa/api/v1/sendFundsToMobile"
+```
+
+**Response:**
+
+```json
+{
+  "message": "Funds sent successfully",
+  "transaction_id": "TXN-1770727500-54321",
+  "phone": "254712345678",
+  "amount": 100.0,
+  "status": "completed",
+  "timestamp": 1770727500
+}
+```
+
+**Request Parameters:**
+
+- `phone` (required): Recipient phone number (local format, no country code)
+- `amount` (required): Amount to send in KES
+- `reference` (optional): Your unique reference
+- `narrative` (optional): Description visible to recipient
+
+---
+
+### 5. Send Funds to Sellapay Account — Account-to-Account Transfer
+
+**Request:**
+
+```bash
+curl -X POST \
+  -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "account": "fbsotk4jH1L7FiO2z2qkqsPiqVHJSaVmpgBu8a7iMWGaba97RH",
+    "amount": 1000,
+    "reference": "REF-12345",
+    "narrative": "Payment invoice 001"
+  }' \
+  "https://pay.sellapay.africa/api/v1/sendFundsToSellapay"
+```
+
+**Response:**
+
+```json
+{
+  "message": "Funds sent successfully",
+  "transaction_id": "TXN-1770727500-99999",
+  "recipient_account": "fbsotk4jH1L7FiO2z2qkqsPiqVHJSaVmpgBu8a7iMWGaba97RH",
+  "amount": 1000.0,
+  "status": "completed",
+  "timestamp": 1770727500
+}
+```
+
+**Request Parameters:**
+
+- `account` (required): Recipient Sellapay account ID
+- `amount` (required): Amount to transfer
+- `reference` (optional): Your unique reference
+- `narrative` (optional): Transaction description
+
+---
+
+### 6. Send Funds to Bank — Bank Account Transfer
+
+**Request:**
+
+```bash
+curl -X POST \
+  -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "bank_code": "015",
+    "account_number": "0123456789",
+    "amount": 5000,
+    "account_name": "John Doe",
+    "reference": "REF-12345"
+  }' \
+  "https://pay.sellapay.africa/api/v1/sendFundsToLocalBank"
+```
+
+**Response:**
+
+```json
+{
+  "message": "Funds sent successfully",
+  "transaction_id": "TXN-1770727500-88888",
+  "bank": "Equity Bank",
+  "account_number": "0123456789",
+  "amount": 5000.0,
+  "status": "pending",
+  "timestamp": 1770727500,
+  "estimated_arrival": "2 hours"
+}
+```
+
+**Request Parameters:**
+
+- `bank_code` (required): Kenya bank code (e.g., "015" for Equity Bank)
+- `account_number` (required): Recipient account number
+- `amount` (required): Amount in KES
+- `account_name` (required): Recipient name
+- `reference` (optional): Your reference
+
+**Common Bank Codes:**
+
+```
+001 = KCB Group Limited
+002 = Barclays Bank
+006 = Co-operative Bank
+007 = Standard Chartered
+008 = Citibank Kenya
+011 = Diamond Trust Bank
+014 = National Bank of Kenya
+015 = Equity Bank
+031 = Housing Finance
+032 = Consolidated Bank Kenya
+```
+
+---
+
+See [examples/](./examples/) directory for complete language-specific implementations with error handling and token refresh logic.
 
 ## 🌐 API Versions
 
