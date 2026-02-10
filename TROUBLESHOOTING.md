@@ -323,11 +323,11 @@ logger.info("Event happened")  # OK
 
 ```javascript
 // Use console only in development
-console.log('Debug info');
+console.log("Debug info");
 
 // Production: use proper logging library
-const logger = require('winston');
-logger.info('Event happened');
+const logger = require("winston");
+logger.info("Event happened");
 ```
 
 **PHP:**
@@ -377,3 +377,6 @@ error_log('Event happened');
 7. Environment (dev/staging/production)
 
 ```
+
+```
+````

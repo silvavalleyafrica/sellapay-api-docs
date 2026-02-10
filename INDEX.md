@@ -142,13 +142,13 @@ docs/
 
 ### Root Level
 
-| File | Purpose | Audience |
-|------|---------|----------|
-| [README.md](./README.md) | Quick overview, getting started | Everyone |
-| [api-reference.md](./api-reference.md) | Complete endpoint documentation | Developers |
-| [CHANGELOG.md](./CHANGELOG.md) | Version history, breaking changes | Maintenance |
-| [CONTRIBUTING.md](./CONTRIBUTING.md) | How to contribute | Contributors |
-| [TROUBLESHOOTING.md](./TROUBLESHOOTING.md) | Common issues, solutions | Debugging |
+| File                                       | Purpose                           | Audience     |
+| ------------------------------------------ | --------------------------------- | ------------ |
+| [README.md](./README.md)                   | Quick overview, getting started   | Everyone     |
+| [api-reference.md](./api-reference.md)     | Complete endpoint documentation   | Developers   |
+| [CHANGELOG.md](./CHANGELOG.md)             | Version history, breaking changes | Maintenance  |
+| [CONTRIBUTING.md](./CONTRIBUTING.md)       | How to contribute                 | Contributors |
+| [TROUBLESHOOTING.md](./TROUBLESHOOTING.md) | Common issues, solutions          | Debugging    |
 
 ---
 
@@ -179,21 +179,21 @@ docs/
 
 ## 📄 Document Versions
 
-| Document | Version | Last Updated | Status |
-|----------|---------|--------------|--------|
-| README.md | 1.0.0 | 2024-01-15 | Stable |
-| api-reference.md | 1.0.0 | 2024-01-15 | Stable |
-| CHANGELOG.md | 1.0.0 | 2024-01-15 | Stable |
-| CONTRIBUTING.md | 1.0.0 | 2024-01-15 | Stable |
-| TROUBLESHOOTING.md | 1.0.0 | 2024-01-15 | Stable |
-| examples/python | 1.0.0 | 2024-01-15 | Stable |
-| examples/javascript | 1.0.0 | 2024-01-15 | Stable |
-| examples/php | 1.0.0 | 2024-01-15 | Stable |
-| examples/ruby | 1.0.0 | 2024-01-15 | Stable |
-| setup/README.md | 1.0.0 | 2024-01-15 | Stable |
-| setup/sdk-installation.md | 1.0.0 | 2024-01-15 | Stable |
-| setup/authentication-setup.md | 1.0.0 | 2024-01-15 | Stable |
-| setup/environment-variables.md | 1.0.0 | 2024-01-15 | Stable |
+| Document                       | Version | Last Updated | Status |
+| ------------------------------ | ------- | ------------ | ------ |
+| README.md                      | 1.0.0   | 2024-01-15   | Stable |
+| api-reference.md               | 1.0.0   | 2024-01-15   | Stable |
+| CHANGELOG.md                   | 1.0.0   | 2024-01-15   | Stable |
+| CONTRIBUTING.md                | 1.0.0   | 2024-01-15   | Stable |
+| TROUBLESHOOTING.md             | 1.0.0   | 2024-01-15   | Stable |
+| examples/python                | 1.0.0   | 2024-01-15   | Stable |
+| examples/javascript            | 1.0.0   | 2024-01-15   | Stable |
+| examples/php                   | 1.0.0   | 2024-01-15   | Stable |
+| examples/ruby                  | 1.0.0   | 2024-01-15   | Stable |
+| setup/README.md                | 1.0.0   | 2024-01-15   | Stable |
+| setup/sdk-installation.md      | 1.0.0   | 2024-01-15   | Stable |
+| setup/authentication-setup.md  | 1.0.0   | 2024-01-15   | Stable |
+| setup/environment-variables.md | 1.0.0   | 2024-01-15   | Stable |
 
 ---
 
@@ -228,3 +228,6 @@ docs/
 - All code examples are **fully working** and **tested**
 
 ```
+
+```
+````

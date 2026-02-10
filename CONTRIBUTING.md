@@ -280,13 +280,13 @@ def authorize(self, api_key: str, api_secret: str) -> str:
 # Docstrings for all classes and functions
 class SellapayClient:
     """Handles Sellapay API requests with automatic token refresh."""
-    
+
     def get_balance(self) -> Dict[str, float]:
         """Retrieve account balance in multiple currencies.
-        
+
         Returns:
             Dict with currency codes as keys, balances as values.
-            
+
         Raises:
             SellapayError: On API error.
         """
@@ -314,10 +314,10 @@ function createClient(apiKey, apiSecret) {
 // Use async/await
 async function getBalance() {
   try {
-    const response = await fetch('/getBalance');
+    const response = await fetch("/getBalance");
     return response.json();
   } catch (error) {
-    console.error('Balance fetch failed:', error);
+    console.error("Balance fetch failed:", error);
   }
 }
 ```
@@ -362,7 +362,7 @@ class SellapayClient
   def initialize(api_key, api_secret)
     # implementation
   end
-  
+
   # Get account balance
   #
   # @return [Hash] Balance by currency
@@ -559,6 +559,7 @@ docs/
 ### Versioning
 
 We follow [Semantic Versioning](https://semver.org/):
+
 - MAJOR: Breaking changes
 - MINOR: New features (backward compatible)
 - PATCH: Bug fixes
@@ -591,6 +592,7 @@ By contributing, you agree that your contributions are licensed under the same l
 ## Recognition
 
 Contributors are recognized in:
+
 - CONTRIBUTORS.md file
 - GitHub contributors page
 - Release notes (for significant contributions)
@@ -598,3 +600,6 @@ Contributors are recognized in:
 Thank you for contributing! 🎉
 
 ```
+
+```
+`````

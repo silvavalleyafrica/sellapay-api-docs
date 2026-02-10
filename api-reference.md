@@ -310,12 +310,12 @@ Transfer funds to another Sellapay user.
 
 **Request Parameters:**
 
-| Field | Type | Required | Description |
-| ----- | ---- | -------- | ----------- |
-| `account` | string | Yes | Recipient account ID |
-| `amount` | float | Yes | Amount to send |
-| `reference` | string | No | Your unique reference |
-| `narrative` | string | No | Transaction description |
+| Field       | Type   | Required | Description             |
+| ----------- | ------ | -------- | ----------------------- |
+| `account`   | string | Yes      | Recipient account ID    |
+| `amount`    | float  | Yes      | Amount to send          |
+| `reference` | string | No       | Your unique reference   |
+| `narrative` | string | No       | Transaction description |
 
 **Response (200 OK):**
 
@@ -374,13 +374,13 @@ Transfer funds to a bank account.
 
 **Request Parameters:**
 
-| Field | Type | Required | Description |
-| ----- | ---- | -------- | ----------- |
-| `bank_code` | string | Yes | Kenya bank code (e.g., "001" for KCB) |
-| `account_number` | string | Yes | Recipient account number |
-| `amount` | float | Yes | Amount to send (KES) |
-| `account_name` | string | Yes | Recipient name |
-| `reference` | string | No | Your reference |
+| Field            | Type   | Required | Description                           |
+| ---------------- | ------ | -------- | ------------------------------------- |
+| `bank_code`      | string | Yes      | Kenya bank code (e.g., "001" for KCB) |
+| `account_number` | string | Yes      | Recipient account number              |
+| `amount`         | float  | Yes      | Amount to send (KES)                  |
+| `account_name`   | string | Yes      | Recipient name                        |
+| `reference`      | string | No       | Your reference                        |
 
 **Common Bank Codes:**
 
@@ -438,15 +438,15 @@ curl -X POST \
 
 ## HTTP Status Codes
 
-| Code | Meaning | Action |
-|------|---------|--------|
-| `200` | OK | Request succeeded |
-| `400` | Bad Request | Fix request parameters |
-| `401` | Unauthorized | Re-authorize to get new token |
-| `402` | Payment Required | Check account balance |
-| `404` | Not Found | Verify resource exists |
-| `500` | Server Error | Retry with exponential backoff |
-| `503` | Service Unavailable | Retry later |
+| Code  | Meaning             | Action                         |
+| ----- | ------------------- | ------------------------------ |
+| `200` | OK                  | Request succeeded              |
+| `400` | Bad Request         | Fix request parameters         |
+| `401` | Unauthorized        | Re-authorize to get new token  |
+| `402` | Payment Required    | Check account balance          |
+| `404` | Not Found           | Verify resource exists         |
+| `500` | Server Error        | Retry with exponential backoff |
+| `503` | Service Unavailable | Retry later                    |
 
 ## Common Request Headers
 
@@ -478,6 +478,7 @@ X-Request-ID: req_12345678
 ## Pagination
 
 Some list endpoints support pagination with:
+
 - `?page=1` - Page number (1-indexed)
 - `?limit=10` - Results per page (max 100)
 
@@ -494,6 +495,7 @@ All error responses include:
 ```
 
 **Always check:**
+
 1. HTTP status code
 2. `error` field for error type
 3. `message` field for details
@@ -514,3 +516,6 @@ See [CHANGELOG](../CHANGELOG.md) for updates.
 - **Email:** api-support@sellapay.africa
 
 ```
+
+```
+````
